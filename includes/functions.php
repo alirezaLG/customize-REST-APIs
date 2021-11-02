@@ -6,8 +6,7 @@ Global $dictionary;
 function wp_menu_route( $request_data ) {
     // using register_nav_menus primary menu name -> 'menu-1'
     $menuLocations = get_nav_menu_locations(); // Get nav locations set in theme, usually functions.php)
-    $menuID = $menuLocations['menu-1'];                                 // returns an array of menu locations ([LOCATION_NAME] = 
-    $mid = isset($request_data["menu_id"]) ? $request_data["menu_id"] : $menuID;
+    $mid = isset($request_data["menu_id"]) ? $request_data["menu_id"] : array_values($menuLocations)[0] ;
 
       // Get the *primary* menu added in register_nav_menus()
     $primaryNav = wp_get_nav_menu_items($mid); // Get the array of wp objects, the nav items for our queried location.
