@@ -72,6 +72,39 @@ add_action( 'rest_api_init', function () {
 });
 
 
+add_action( 'rest_api_init', 'slug_register_embed_youtube' );
+// "venue" is a custom post type I created using the WP Types plugin
+function slug_register_embed_youtube() {
+    // first register the field with WP REST API
+    register_rest_field( 'post',
+        'images',
+        array(
+            'get_callback'    => 'get_image_url',
+            'update_callback' => null,
+            'schema'          => null,
+        )
+    );
+}
+
+function get_image_url($post, $field_name, $request) {
+    // I wanted the value to appear in the response as "youtube_embed", 
+    // and I wanted the "wpcf-youtube-embed" custom field's value there
+    $thumb = wp_get_attachment_image_src( get_post_thumbnail_id( $post->id ), 'thumbnail' );
+    $thumb_url = $thumb['0'];
+
+    $medium = wp_get_attachment_image_src( get_post_thumbnail_id( $post->id ), 'medium' );
+    $medium_url = $medium['0'];
+
+    $large = wp_get_attachment_image_src( get_post_thumbnail_id( $post->id ), 'large' );
+    $large_url = $large['0'];
+
+    return array(
+        'thumbnail' => $thumb_url,
+        'medium' => $medium_url,
+        'large'  => $large_url,
+    );
+}
+
 
 function default_settings(){
     Global $dictionary;
