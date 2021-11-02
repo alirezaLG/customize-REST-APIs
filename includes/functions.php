@@ -51,11 +51,11 @@ if( (int)get_option($dictionary['ts_menu_image']) > 1 ){
 function related_posts_endpoint( $request_data ) {
     $related = isset($request_data['related']) ? $request_data['related'] : 5 ; 
     $tags = wp_get_post_tags($request_data['post_id']);
-    $first_tag = $tags[0]->term_id;
+    // $first_tag = $tags[0]->term_id;
 
     $uposts = get_posts(
     array(
-        'tag__in' => array($first_tag),
+        'tag__in' => $tags, //array($first_tag),
         'caller_get_posts'=> 1,
         'posts_per_page' => $related,
         'post__not_in'   => array($request_data['post_id']),//your requested post id 
