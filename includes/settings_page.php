@@ -15,9 +15,11 @@ function tsapi_settings_form_page_handler()
     if ( isset($_REQUEST['nonce']) && wp_verify_nonce($_REQUEST['nonce'], basename(__FILE__)) ) {
             
         $menu_setting = $_REQUEST['menu'] == "on" ? $_REQUEST['menu'] : 'off' ;
+        $related_setting = $_REQUEST['related'] == "on" ? $_REQUEST['related'] : 'off' ;
 
         update_option($dictionary['ts_name'], htmlspecialchars($_POST['name']));
         update_option($dictionary['ts_menu'], $menu_setting);
+        update_option($dictionary['ts_related'], $related_setting);
         update_option( $dictionary['ts_menu_image'], absint( $_POST['image_attachment_id'] ) );
 
         $message = __('Item was successfully saved', 'tsapi'); 
@@ -61,6 +63,15 @@ function tsapi_settings_form_page_handler()
                     <td><label for="menu"><input name="menu" type="checkbox" id="menu" <?php echo ($menu_setting == 'on' ? 'checked' : '' ) ?> > Enable menu in Rest API </label></td>
                 </tr>       
             </tbody>
+
+            <tbody>
+                <tr class="user-rich-editing-wrap">
+                    <th scope="row"><?php _e('Add Related posts to Rest API :', 'tsapi')?></th>
+                    <td><label for="related"><input name="related" type="checkbox" id="related" <?php echo ($related_setting == 'on' ? 'checked' : '' ) ?> > Enable related in Rest API </label></td>
+                </tr>       
+            </tbody>
+
+            
             
             <tbody>
                 <tr class="user-rich-editing-wrap">

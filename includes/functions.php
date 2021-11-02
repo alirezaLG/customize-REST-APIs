@@ -12,17 +12,17 @@ function wp_menu_route() {
     return $primaryNav;
 
 }
-function register_menu(){
+
+//toggle the menu
+if(get_option($dictionary['ts_menu']) == "on"){
+add_action( 'rest_api_init', function(){
         //https://your-wp-domain-url.com/wp-json/custom-name/menu
         register_rest_route( 'tsapi', '/menu', array(
         'methods' => 'GET',
         'callback' => 'wp_menu_route',
     ) );
 
-}
-//toggle the menu
-if(get_option($dictionary['ts_menu']) == "on"){
-add_action( 'rest_api_init', 'register_menu' );    
+} );    
 }
 
 
@@ -36,18 +36,39 @@ function wp_menu_settings_route() {
     return $settings;
 
 }
-function register_menu_settings(){
-        register_rest_route( 'tsapi', '/menu_settings', array(
-        'methods' => 'GET',
-        'callback' => 'wp_menu_settings_route',
-    ) );
 
-}
 //toggle the menu settings
 if( (int)get_option($dictionary['ts_menu_image']) > 1 ){
-add_action( 'rest_api_init', 'register_menu_settings' );    
+    add_action( 'rest_api_init', function(){
+            register_rest_route( 'tsapi', '/menu_settings', array(
+            'methods' => 'GET',
+            'callback' => 'wp_menu_settings_route',
+        ) );
+    } );    
 }
 
+ 
+function related_posts_endpoint( $request_data ) {
+    $related = isset($request_data['related']) ? $request_data['related'] : 5 ; 
+    $tags = wp_get_post_tags($request_data['post_id']);
+    $first_tag = $tags[0]->term_id;
+
+    $uposts = get_posts(
+    array(
+        'tag__in' => array($first_tag),
+        'caller_get_posts'=> 1,
+        'posts_per_page' => $related,
+        'post__not_in'   => array($request_data['post_id']),//your requested post id 
+    )
+    );
+    return  $uposts;
+ }
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'tsapi', '/post/related/', array(
+            'methods' => 'GET',
+            'callback' => 'related_posts_endpoint'
+    ));
+});
 
 
 
