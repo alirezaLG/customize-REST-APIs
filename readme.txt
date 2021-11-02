@@ -1,4 +1,4 @@
-=== WP Basic Crud ===
+=== Custom Feed for Mobile ===
 Tags:  REST API, WP Json, API, Cutomizer 
 Author link: https://Techsharks.af/
 Requires at least: 4.9
