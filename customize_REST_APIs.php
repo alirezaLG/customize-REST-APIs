@@ -1,7 +1,7 @@
 <?php
 /**
-* Plugin Name: Customize Rest API
-* Description: This plugin to help you to customize your rest api.
+* Plugin Name: Customize REST APIs
+* Description: This plugin to help you to customize your rest apis.
 * Version:     1.0
 * Plugin URI:  https://Techsharks.af
 * Author:      Alireza Akbari
