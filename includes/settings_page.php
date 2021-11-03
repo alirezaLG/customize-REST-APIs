@@ -1,6 +1,9 @@
 <?php
 defined( 'ABSPATH' ) or die( 'Sorry dude !' );
 
+function clean($input){
+    return sanitize_text_field($input);
+}
 
 function tsapi_settings_form_page_handler()
 {
@@ -17,10 +20,10 @@ function tsapi_settings_form_page_handler()
         $menu_setting = $_REQUEST['menu'] == "on" ? $_REQUEST['menu'] : 'off' ;
         $related_setting = $_REQUEST['related'] == "on" ? $_REQUEST['related'] : 'off' ;
 
-        update_option($dictionary['ts_name'], htmlspecialchars($_POST['name']));
-        update_option($dictionary['ts_menu'], $menu_setting);
-        update_option($dictionary['ts_related'], $related_setting);
-        update_option( $dictionary['ts_menu_image'], absint( $_POST['image_attachment_id'] ) );
+        update_option($dictionary['ts_name'], clean($_POST['name']));
+        update_option($dictionary['ts_menu'], clean($menu_setting));
+        update_option($dictionary['ts_related'], clean($related_setting));
+        update_option( $dictionary['ts_menu_image'], clean(absint( $_POST['image_attachment_id'] )));
 
         $message = __('Item was successfully saved', 'tsapi'); 
     }
@@ -34,39 +37,39 @@ function tsapi_settings_form_page_handler()
     ?>
 <div class="wrap">
     <div class="icon32 icon32-posts-post" id="icon-edit"><br></div>
-    <h2><?php _e('Settings', 'tsapi')?> </h2>
+    <h2><?php esc_html_e('Settings', 'tsapi')?> </h2>
 
     <?php if (!empty($notice)): ?>
-    <div id="notice" class="error"><p><?php echo $notice ?></p></div>
+    <div id="notice" class="error"><p><?php echo esc_attr($notice); ?></p></div>
     <?php endif;?>
     <?php if (!empty($message)): ?>
-    <div id="message" class="updated"><p><?php echo $message ?></p></div>
+    <div id="message" class="updated"><p><?php echo esc_attr($message); ?></p></div>
     <?php endif;?>
 
 
     <form method="POST" id='form'>
         <input type="hidden" name="nonce" value="<?php echo wp_create_nonce(basename(__FILE__))?>"/>
-        <input type="hidden" name="id" value="<?php echo $item['id'] ?>"/>
+        <input type="hidden" name="id" value="<?php echo esc_attr($item['id']) ?>"/>
         <table class="form-table" role="presentation">
             
             
             <tbody>
                 <tr class="user-rich-editing-wrap">
-                    <th scope="row"><?php _e('App name:', 'tsapi')?></th>
-                    <td><label for="name"><input name="name" type="text" id="name" value="<?php echo get_option( $dictionary['ts_name'] ); ?>" > </label></td>
+                    <th scope="row"><?php esc_html_e('App name:', 'tsapi')?></th>
+                    <td><label for="name"><input name="name" type="text" id="name" value="<?php echo esc_attr(get_option( $dictionary['ts_name'] )); ?>" > </label></td>
                 </tr>       
             </tbody>
             
             <tbody>
                 <tr class="user-rich-editing-wrap">
-                    <th scope="row"><?php _e('Add Menu to Rest API :', 'tsapi')?></th>
+                    <th scope="row"><?php esc_html_e('Add Menu to Rest API :', 'tsapi')?></th>
                     <td><label for="menu"><input name="menu" type="checkbox" id="menu" <?php echo ($menu_setting == 'on' ? 'checked' : '' ) ?> > Enable menu in Rest API </label></td>
                 </tr>       
             </tbody>
 
             <tbody>
                 <tr class="user-rich-editing-wrap">
-                    <th scope="row"><?php _e('Add Related posts to Rest API :', 'tsapi')?></th>
+                    <th scope="row"><?php esc_html_e('Add Related posts to Rest API :', 'tsapi')?></th>
                     <td><label for="related"><input name="related" type="checkbox" id="related" <?php echo ($related_setting == 'on' ? 'checked' : '' ) ?> > Enable related in Rest API </label></td>
                 </tr>       
             </tbody>
@@ -75,20 +78,20 @@ function tsapi_settings_form_page_handler()
             
             <tbody>
                 <tr class="user-rich-editing-wrap">
-                    <th scope="row"><?php _e('Menu cover photo :', 'tsapi')?></th>
+                    <th scope="row"><?php esc_html_e('Menu cover photo :', 'tsapi')?></th>
                     <td>
                         <div class='image-preview-wrapper'>
                             <img id='image-preview' src='<?php echo wp_get_attachment_url( get_option( $dictionary['ts_menu_image']) ); ?>' height='100'>
                         </div>
-                        <input id="upload_image_button" type="button" class="button" value="<?php _e( 'Upload image' ); ?>" />
-                        <input type='hidden' name='image_attachment_id' id='image_attachment_id' value='<?php echo get_option( $dictionary['ts_menu_image'] ); ?>'>
+                        <input id="upload_image_button" type="button" class="button" value="<?php esc_html_e( 'Upload image' ); ?>" />
+                        <input type='hidden' name='image_attachment_id' id='image_attachment_id' value='<?php echo esc_url(get_option( $dictionary['ts_menu_image'])); ?>'>
                     </td>
                 </tr>       
             </tbody>
             
 
         </table>
-        <p><input type="submit" value="<?php _e('Save', 'tsapi')?>" id="submit" class="button-primary" name="submit"></p>
+        <p><input type="submit" value="<?php esc_html_e('Save', 'tsapi')?>" id="submit" class="button-primary" name="submit"></p>
     </form>
 
 
@@ -106,7 +109,7 @@ function tsapi_settings_form_page_handler()
             // Uploading files
             var file_frame;
             var wp_media_post_id = wp.media.model.settings.post.id; // Store the old id
-            var set_to_post_id = <?php echo $my_saved_attachment_post_id; ?>; // Set this
+            var set_to_post_id = <?php echo esc_attr($my_saved_attachment_post_id); ?>; // Set this
 
             jQuery('#upload_image_button').on('click', function( event ){
 

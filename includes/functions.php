@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) or die( 'Sorry dude !' );
 
 Global $dictionary;
 
-function wp_menu_route( $request_data ) {
+function tsapi_add_menu( $request_data ) {
     // using register_nav_menus primary menu name -> 'menu-1'
     $menuLocations = get_nav_menu_locations(); // Get nav locations set in theme, usually functions.php)
     $mid = isset($request_data["menu_id"]) ? $request_data["menu_id"] : array_values($menuLocations)[0] ;
@@ -20,7 +20,7 @@ add_action( 'rest_api_init', function(){
         //https://your-wp-domain-url.com/wp-json/custom-name/menu
         register_rest_route( 'tsapi', '/menu', array(
         'methods' => 'GET',
-        'callback' => 'wp_menu_route',
+        'callback' => 'tsapi_add_menu',
     ) );
 
 } );    
@@ -28,7 +28,7 @@ add_action( 'rest_api_init', function(){
 
 
 
-function wp_menu_settings_route() {
+function tsapi_add_custom_settings() {
     // using register_nav_menus primary menu name -> 'menu-1'
     Global $dictionary;
     $settings = array();
@@ -43,13 +43,13 @@ if( (int)get_option($dictionary['ts_menu_image']) > 1 ){
     add_action( 'rest_api_init', function(){
             register_rest_route( 'tsapi', '/menu_settings', array(
             'methods' => 'GET',
-            'callback' => 'wp_menu_settings_route',
+            'callback' => 'tsapi_add_custom_settings',
         ) );
     } );    
 }
 
  
-function related_posts_endpoint( $request_data ) {
+function tsapi_add_related_restapi( $request_data ) {
     $related = isset($request_data['related']) ? $request_data['related'] : 5 ; 
     $tags = wp_get_post_tags($request_data['post_id']);
     // $first_tag = $tags[0]->term_id;
@@ -67,26 +67,26 @@ function related_posts_endpoint( $request_data ) {
 add_action( 'rest_api_init', function () {
     register_rest_route( 'tsapi', '/post/related/', array(
             'methods' => 'GET',
-            'callback' => 'related_posts_endpoint'
+            'callback' => 'tsapi_add_related_restapi'
     ));
 });
 
 
-add_action( 'rest_api_init', 'slug_register_embed_youtube' );
+add_action( 'rest_api_init', 'tsapi_add_image_restapi' );
 // "venue" is a custom post type I created using the WP Types plugin
-function slug_register_embed_youtube() {
+function tsapi_add_image_restapi() {
     // first register the field with WP REST API
     register_rest_field( 'post',
         'images',
         array(
-            'get_callback'    => 'get_image_url',
+            'get_callback'    => 'tsapi_get_image_url',
             'update_callback' => null,
             'schema'          => null,
         )
     );
 }
 
-function get_image_url($post, $field_name, $request) {
+function tsapi_get_image_url($post, $field_name, $request) {
     // I wanted the value to appear in the response as "youtube_embed", 
     // and I wanted the "wpcf-youtube-embed" custom field's value there
     $thumb = wp_get_attachment_image_src( get_post_thumbnail_id( $post->id ), 'thumbnail' );
@@ -106,7 +106,7 @@ function get_image_url($post, $field_name, $request) {
 }
 
 
-function default_settings(){
+function tsapi_default_settings(){
     Global $dictionary;
     if(get_option($dictionary['ts_menu']) == null) 
     update_option($dictionary['ts_menu'], 'on');
