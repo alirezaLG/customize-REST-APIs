@@ -11,17 +11,26 @@ function tsapi_add_menu( $request_data ) {
     
 
 
-    foreach($primaryNav as $menu){
-        $menus[] = array(
-            "menu_order" => $menu->menu_order,
-            "menu_item_parent" => (int)$menu->menu_item_parent,
-            "type" => $menu->type_label,
-            "cid" => (int)$menu->object_id,
-            "title" => $menu->title,
-
-        );
-    }
-    return $menus;
+    foreach($primaryNav as $m){
+        
+        if (empty($m->menu_item_parent)) {
+            $menu[$m->ID] = array(
+                'ID'=> $m->object_id*1,
+                'title'=>$m->title,/*'url'=>$m->url*/
+                'children'=>array());
+        }
+        
+        if ($m->menu_item_parent) {
+            $menu[$m->menu_item_parent]['children'][] = array(
+            'ID'=>$m->object_id*1,
+            'title'=>$m->title,/*'url'=>$m->url*/);
+         }
+        $menufinal  = array();
+        foreach($menu as $i => $v){
+            $menufinal[] = $v;
+        }
+}
+    return $menufinal;
 
 }
 
