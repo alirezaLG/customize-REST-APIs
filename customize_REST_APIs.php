@@ -3,7 +3,7 @@
 * Plugin Name: Customize REST APIs
 * Description: This plugin to help you to customize your rest apis.
 * Version:     1.0
-* Plugin URI:  https://Techsharks.af
+* Plugin URI:  https://github.com/alirezaLG/customize-REST-APIs
 * Author:      Alireza Akbari
 * Author URI:  Techsharks.af
 * License:     GPLv2 or later
