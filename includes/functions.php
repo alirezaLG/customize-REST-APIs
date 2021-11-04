@@ -7,10 +7,21 @@ function tsapi_add_menu( $request_data ) {
     // using register_nav_menus primary menu name -> 'menu-1'
     $menuLocations = get_nav_menu_locations(); // Get nav locations set in theme, usually functions.php)
     $mid = isset($request_data["menu_id"]) ? $request_data["menu_id"] : array_values($menuLocations)[0] ;
-
-      // Get the *primary* menu added in register_nav_menus()
     $primaryNav = wp_get_nav_menu_items($mid); // Get the array of wp objects, the nav items for our queried location.
-    return $primaryNav;
+    
+
+
+    foreach($primaryNav as $menu){
+        $menus[] = array(
+            "menu_order" => $menu->menu_order,
+            "menu_item_parent" => (int)$menu->menu_item_parent,
+            "type" => $menu->type_label,
+            "cid" => (int)$menu->object_id,
+            "title" => $menu->title,
+
+        );
+    }
+    return $menus;
 
 }
 
