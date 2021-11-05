@@ -1,9 +1,6 @@
 <?php
 defined( 'ABSPATH' ) or die( 'Sorry dude !' );
 
-function clean($input){
-    return sanitize_text_field($input);
-}
 
 function tsapi_settings_form_page_handler()
 {
@@ -20,10 +17,10 @@ function tsapi_settings_form_page_handler()
         $menu_setting = $_REQUEST['menu'] == "on" ? $_REQUEST['menu'] : 'off' ;
         $related_setting = $_REQUEST['related'] == "on" ? $_REQUEST['related'] : 'off' ;
 
-        update_option($dictionary['ts_name'], clean($_POST['name']));
-        update_option($dictionary['ts_menu'], clean($menu_setting));
-        update_option($dictionary['ts_related'], clean($related_setting));
-        update_option( $dictionary['ts_menu_image'], clean(absint( $_POST['image_attachment_id'] )));
+        update_option($dictionary['ts_name'], sanitize_text_field($_POST['name']));
+        update_option($dictionary['ts_menu'], sanitize_text_field($menu_setting));
+        update_option($dictionary['ts_related'], sanitize_text_field($related_setting));
+        update_option( $dictionary['ts_menu_image'], sanitize_text_field(absint( $_POST['image_attachment_id'] )));
 
         $message = __('Item was successfully saved', 'tsapi'); 
     }
