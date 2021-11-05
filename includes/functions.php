@@ -54,6 +54,7 @@ function tsapi_add_custom_settings() {
     $settings = array();
 
     $settings["menu_image"] = wp_get_attachment_image_src(get_option($dictionary['ts_menu_image']), "medium")[0];
+    $settings["settings"] = get_option($dictionary['ts_name']);
     return $settings;
 
 }
@@ -61,7 +62,7 @@ function tsapi_add_custom_settings() {
 //toggle the menu settings
 if( (int)get_option($dictionary['ts_menu_image']) > 1 ){
     add_action( 'rest_api_init', function(){
-            register_rest_route( 'tsapi', '/menu_settings', array(
+            register_rest_route( 'tsapi', '/settings', array(
             'methods' => 'GET',
             'callback' => 'tsapi_add_custom_settings',
         ) );
