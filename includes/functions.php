@@ -1,6 +1,7 @@
 <?php 
 defined( 'ABSPATH' ) or die( 'Sorry dude !' );
 
+error_reporting(0);
 Global $dictionary;
 
 function tsapi_add_menu( $request_data ) {
@@ -74,20 +75,21 @@ function tsapi_add_related_restapi( $request_data ) {
     $post_id = sanitize_text_field($request_data['post_id']);
     $ptags = wp_get_post_tags($post_id);
     // $first_tag = $ptags[0]->term_id;
-
-    foreach ($ptags as $tag) {
-        $tags[] = $tag->term_id;
-    }
-
-     
+    // get only ids
+    foreach ($ptags as $tag) { $tags[] = $tag->term_id; }
 
     $uposts = new WP_Query( array(
         'tag__in' => $tags, //array($first_tag),
         'caller_get_posts' => 1,
         'posts_per_page' => $related,
-        'post__not_in'   => array($post_id),//your requested post id 
+        'post__not_in'   => array($post_id),
     ));
     
+    // add image to related posts
+    foreach ($uposts->posts as $post) {
+        $post->images = tsapi_get_image_url($post);
+    }
+
     return  $uposts->posts;
  }
 add_action( 'rest_api_init', function () {
@@ -112,18 +114,12 @@ function tsapi_add_image_restapi() {
     );
 }
 
-function tsapi_get_image_url($post, $field_name, $request) {
-    // I wanted the value to appear in the response as "youtube_embed", 
-    // and I wanted the "wpcf-youtube-embed" custom field's value there
-    $thumb = wp_get_attachment_image_src( get_post_thumbnail_id( $post->id ), 'thumbnail' );
-    $thumb_url = $thumb['0'];
-
-    $medium = wp_get_attachment_image_src( get_post_thumbnail_id( $post->id ), 'medium' );
-    $medium_url = $medium['0'];
-
-    $large = wp_get_attachment_image_src( get_post_thumbnail_id( $post->id ), 'large' );
-    $large_url = $large['0'];
-
+function tsapi_get_image_url($post) {
+    
+    $thumb_url = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'thumbnail' )['0'];
+    $medium_url = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'medium' )['0'];
+    $large_url = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'large' )['0'];
+    
     return array(
         'thumbnail' => $thumb_url,
         'medium' => $medium_url,
