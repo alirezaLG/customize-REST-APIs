@@ -6,10 +6,9 @@ Global $dictionary;
 function tsapi_add_menu( $request_data ) {
     // using register_nav_menus primary menu name -> 'menu-1'
     $menuLocations = get_nav_menu_locations(); // Get nav locations set in theme, usually functions.php)
-    $mid = isset($request_data["menu_id"]) ? $request_data["menu_id"] : array_values($menuLocations)[0] ;
+    $mid = isset($request_data["menu_id"]) ? sanitize_text_field($request_data["menu_id"]) : array_values($menuLocations)[0] ;
     $primaryNav = wp_get_nav_menu_items($mid); // Get the array of wp objects, the nav items for our queried location.
     
-
 
     foreach($primaryNav as $m){
         
@@ -71,19 +70,25 @@ if( (int)get_option($dictionary['ts_menu_image']) > 1 ){
 
  
 function tsapi_add_related_restapi( $request_data ) {
-    $related = isset($request_data['related']) ? $request_data['related'] : 5 ; 
-    $tags = wp_get_post_tags($request_data['post_id']);
-    // $first_tag = $tags[0]->term_id;
+    $related = isset($request_data['related']) ? sanitize_text_field($request_data['related']) : 5 ; 
+    $post_id = sanitize_text_field($request_data['post_id']);
+    $ptags = wp_get_post_tags($post_id);
+    // $first_tag = $ptags[0]->term_id;
 
-    $uposts = get_posts(
-    array(
+    foreach ($ptags as $tag) {
+        $tags[] = $tag->term_id;
+    }
+
+     
+
+    $uposts = new WP_Query( array(
         'tag__in' => $tags, //array($first_tag),
-        'caller_get_posts'=> 1,
+        'caller_get_posts' => 1,
         'posts_per_page' => $related,
-        'post__not_in'   => array($request_data['post_id']),//your requested post id 
-    )
-    );
-    return  $uposts;
+        'post__not_in'   => array($post_id),//your requested post id 
+    ));
+    
+    return  $uposts->posts;
  }
 add_action( 'rest_api_init', function () {
     register_rest_route( 'tsapi', '/post/related/', array(
