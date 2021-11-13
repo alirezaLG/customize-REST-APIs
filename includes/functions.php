@@ -100,9 +100,11 @@ add_action( 'rest_api_init', function () {
 });
 
 
-add_action( 'rest_api_init', 'tsapi_add_image_restapi' );
+
+
+add_action( 'rest_api_init', 'tsapi_add_remove_content' );
 // "venue" is a custom post type I created using the WP Types plugin
-function tsapi_add_image_restapi() {
+function tsapi_add_remove_content() {
     // first register the field with WP REST API
     register_rest_field( 'post',
         'images',
@@ -113,6 +115,30 @@ function tsapi_add_image_restapi() {
         )
     );
 }
+
+
+
+add_action( 'rest_api_init', function() {
+    // first register the field with WP REST API
+    register_rest_field( 'post',
+        'content',
+        array(
+            'get_callback'    => 'tsapi_remove_content',
+            'update_callback' => null,
+            'schema'          => null,
+        )
+    );
+} );
+
+function tsapi_remove_content($post,  $field_name, $request ){
+    
+    if(!empty($request["page"]) or !empty($request["per_page"]) )
+    unset($post["content"]) ;
+    else
+        return $post["content"];
+    }
+
+
 
 function tsapi_get_image_url($post) {
     
